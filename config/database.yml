@@ -2,6 +2,6 @@
 # gem install sqlite3
 default:
   adapter: sqlite3
-  database: db/bio-sra.sqlite3
+  database: db/SRAmetadb.sqlite
   pool: 5
   timeout: 5000

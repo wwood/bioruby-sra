@@ -7,10 +7,13 @@
 #   require 'bio/bio-plugin/plugin'
 #
 # In this file only require other files. Avoid other source code.
+require 'active_record'
 
-require 'bio-sra/sra.rb'
+require 'bio-logger'
+Bio::Log::LoggerPlus.new('bio-sra')
 
 require 'bio/sra/connect'
-  
-require 'bio/sra/example'
-  
+require 'bio/sra/sra'
+require 'bio/sra/tables'
+
+
