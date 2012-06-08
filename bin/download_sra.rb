@@ -71,7 +71,8 @@ else
   accessions = ARGV.collect{|r| r.split(/[\s,]+/)}.flatten.reject{|a| a==''}
 end
 
-
+# Connect to the database
+Bio::SRA::Connection.connect
 
 
 
