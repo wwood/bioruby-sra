@@ -76,7 +76,7 @@ module Bio
       # "submission_center",
       # "submission_lab",
       # "submission_date"]
-      class SRA < DummyConn
+      class SRA < Connection
         self.table_name = 'sra'
         belongs_to :submission, :foreign_key => 'submission_ID', :class_name => 'Submission', :primary_key => 'submission_ID'
   
@@ -108,7 +108,7 @@ module Bio
         end
       end
       
-      class Submission < DummyConn
+      class Submission < Connection
         self.table_name = 'submission'
         self.primary_key = 'submission_ID'
         has_many :sras, :foreign_key => 'submission_ID', :class_name => 'SRA'

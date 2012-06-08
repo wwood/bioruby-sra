@@ -5,7 +5,7 @@ source "http://rubygems.org"
 gem 'activerecord', '>=3.2.3'
 gem "activesupport", ">= 3.2.3"
 gem "sqlite3", ">= 1.3.3"
-gem 'bio-logger'
+gem 'bio-logger', '>=1.0.1'
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
