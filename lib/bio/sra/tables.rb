@@ -79,15 +79,13 @@ module Bio
       class SRA < Connection
         self.table_name = 'sra'
         belongs_to :submission, :foreign_key => 'submission_ID', :class_name => 'Submission', :primary_key => 'submission_ID'
-  
-        def self.find_by_accession(accession)
+        
+        # named_scope for finding by an arbitrary SRA accession number e.g.
+        # SRA.accession('SRA049809').all #=> Array of SRA objects that are part of the SRA049809 submission
+        # SRA.accession('SRA049809').first #=> SRA object for the SRR404303 run (there is only 1 since this is a run accession)
+        named_scope :accession, lambda do |accession|
           type = Bio::SRA::Accession.classify_accession_type(accession)
-          SRA.where("#{type}_accession" => accession).first
-        end
-  
-        def self.find_all_by_accession(accession)
-          type = Bio::SRA::Accession.classify_accession_type(accession)
-          SRA.where("#{type}_accession" => accession).all
+          {:conditions => {"#{type}_accession".to_sym => accession}}
         end
         
         # URLs of all the runs in this project
