@@ -1,5 +1,9 @@
 module Bio
   module SRA
+    def self.connect
+      Connection.connect
+    end
+      
     class Connection < ActiveRecord::Base
       self.abstract_class = true
       
