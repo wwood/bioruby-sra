@@ -44,13 +44,54 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end# encoding: utf-8
 Encoding.default_external = Encoding::UTF_8
-Encoding.default_internal = Encoding::UTF_8
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__),'lib')
 require 'active_support'
 require 'active_support/core_ext/class/attribute_accessors'
 require 'active_support/core_ext/module/delegation'
 require 'active_record'
+
+namespace :db do
+  namespace :schema do
+    desc 'Dump out the schema in markdown format suitable for inclusion at https://github.com/wwood/bioruby-sra/wiki/MetadatabaseSchema' 
+    task :dump_wiki_format do
+      require 'bio-sra'
+      include Bio::SRA::Tables
+      Bio::SRA.connect
+      
+      # grep 'class ' lib/bio/sra/tables.rb |awk '{print $2}'
+      tables = [SRA,
+        Submission,
+        Experiment,
+        Run,
+        Sample,
+        Study,
+        SRAFt,
+        SRAFtContent,
+        SRAFtSegDir,
+        SRAFtSegments,
+        MetaInfo,
+        ColDesc]
+      tables.each do |table|
+        puts "### #{table}"
+        puts "table name in database: #{table.table_name}"
+        ColDesc.where(:table_name => table.table_name).limit(3).all.each do |c|
+          puts c.field_name
+          f = c.field_name
+          unless table.first.respond_to?(f.to_sym) #e.g. ID => submission_ID
+            f = "#{c.table_name}_#{f}"
+          end
+          if table.first.respond_to?(f.to_sym)
+            puts "* **#{c.field_name}** #{c.description} "+
+              "e.g. #{table.limit(2).where("#{f} not null").all.collect{|e| e.send(f.to_sym)}.join(', or ')}"
+          else
+            puts "* **#{c.field_name}** undocumented in the col_desc table"
+          end
+        end
+      end
+    end
+  end
+end
 
 #This code is coming from activerecord-3.0.7/lib/active_record/railties/databases.rake
 namespace :db do
