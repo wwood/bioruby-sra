@@ -60,12 +60,13 @@ namespace :db do
       Bio::SRA.connect
       
       # grep 'class ' lib/bio/sra/tables.rb |awk '{print $2}'
-      tables = [SRA,
+      tables = [
         Submission,
         Experiment,
-        Run,
-        Sample,
         Study,
+        Sample,
+        Run,
+        SRA,
         SRAFt,
         SRAFtContent,
         SRAFtSegDir,
@@ -73,21 +74,43 @@ namespace :db do
         MetaInfo,
         ColDesc]
       tables.each do |table|
-        puts "### #{table}"
-        puts "table name in database: #{table.table_name}"
-        ColDesc.where(:table_name => table.table_name).limit(3).all.each do |c|
-          puts c.field_name
+        puts "### The table '#{table.table_name}'"
+        puts "bioruby-sra class name: #{table.to_s.gsub('Bio::SRA::Tables::','')}"
+        puts
+        documented_columns = ColDesc.where(:table_name => table.table_name).order('field_name').all.collect do |c|
           f = c.field_name
           unless table.first.respond_to?(f.to_sym) #e.g. ID => submission_ID
             f = "#{c.table_name}_#{f}"
           end
           if table.first.respond_to?(f.to_sym)
-            puts "* **#{c.field_name}** #{c.description} "+
-              "e.g. #{table.limit(2).where("#{f} not null").all.collect{|e| e.send(f.to_sym)}.join(', or ')}"
+            examples = table.limit(2).where("#{f} not null").select("distinct(#{f})").all.collect{|e| e.send(f.to_sym)}
+            examples.collect! do |eg|
+              if eg.kind_of?(String) and eg.length > 50
+                eg[0..49]+'..'
+              else
+                eg
+              end
+            end
+            examples.collect!{|eg| eg.to_s.gsub('_','\_').strip}
+            print "* **#{f}** #{c.description.gsub('_','\_')} "+
+              "(#{c.type}) "
+            if examples[0].to_s.length > 0
+              puts "e.g. _#{examples.join('_, _')}_"
+            else
+              puts '_(currently always null in the database)_'
+            end         
+            f
           else
-            puts "* **#{c.field_name}** undocumented in the col_desc table"
+            nil
           end
         end
+        undocumented_columns = table.content_columns.collect{|col| col.name}.reject{|col| documented_columns.include?(col)}
+        if !undocumented_columns.empty?
+          puts
+          puts 'Currently undocumented columns: '+undocumented_columns.sort.join(', ')
+        end
+        puts
+        puts
       end
     end
   end

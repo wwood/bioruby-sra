@@ -460,7 +460,7 @@ module Bio
       class ColDesc < Connection
         self.table_name = 'col_desc'
         self.primary_key = 'col_desc_ID'
-        set_inheritance_column nil
+        self.inheritance_column = nil
       end
     end
   end

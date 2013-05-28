@@ -5,10 +5,10 @@ module Bio
     SAMPLE = 'sample'
     EXPERIMENT = 'experiment'
     RUN = 'run'
-      
+
     class Accession
       @@log = Bio::Log::LoggerPlus['bio-sra']
-      
+
       # valid_in_type <- c(SRA = "submission", ERA = "submission",
       # DRA = "submission", SRP = "study", ERP = "study", DRP = "study",
       # SRS = "sample", ERS = "sample", DRS = "sample", SRX = "experiment",
@@ -31,14 +31,14 @@ module Bio
         'ERR' => Bio::SRA::RUN,
         'DRR' => Bio::SRA::RUN,
       }
-      
+
       # bys = {
         # Bio::SRA::EXPERIMENT => 'ByExp',
         # Bio::SRA::RUN => 'ByRun',
         # Bio::SRA::SAMPLE => 'BySample',
         # Bio::SRA::STUDY => 'ByStudy',
       # }
-      
+
       def self.classify_accession_type(accession)
         type = ACCESSION_TO_TYPE[accession[0..2]]
         if type.nil?
@@ -47,7 +47,35 @@ module Bio
         @@log.debug "Classified #{accession} as SRA type '#{type}'" if @@log.debug?
         return type
       end
-      
+
+      def self.format_symbol_to_extension(format_symbol)
+        non_standard_extensions = {
+          :sralite => '.lite.sra',
+          :fastq_gz => '.fastq.gz',
+        }
+        style = format_symbol_to_standard_text format_symbol
+
+        # Default extension is the same as the format
+        style_extension = non_standard_extensions[format_symbol]
+        style_extension ||= ".#{style}"
+
+        return style_extension
+      end
+
+      def self.format_symbol_to_standard_text(format_symbol)
+        formats = {
+          :sralite => 'litesra',
+          :sra => 'sra',
+          :fastq_gz => 'fastq',
+          :sff => 'sff'
+        }
+        style = formats[format_symbol]
+        if style.nil?
+          raise "Unexpected download format detected #{options[:format]}, I need one of '#{formats.keys.join(', ')}'"
+        end
+        return style
+      end
+
       # Return the URL where a run can be downloaded. Only works if the accession is a run accession e.g. SRR000002 or DRR000002. To get run accessions from other accession type e.g. SRP000002, try Bio::SRA::Sra
       #
       # Options:
@@ -63,35 +91,18 @@ module Bio
         else
           options[:format] ||= :sralite #default to sralite
         end
-        
-        
+
+
         type = classify_accession_type(run_accession)
         unless type == Bio::SRA::RUN
           raise "Unexpected type of accession for '#{run_accession}': Expected #{Bio::SRA::RUN} but was #{type}"
         end
-        
-        formats = {
-          :sralite => 'litesra',
-          :sra => 'sra',
-          :fastq_gz => 'fastq',
-          :sff => 'sff'
-        }
-        non_standard_extensions = {
-          :sralite => '.lite.sra',
-          :fastq_gz => '.fastq.gz',
-        }
-        
-        style = formats[options[:format]]
-        if style.nil?
-          raise "Unexpected download format detected #{options[:format]}, I need one of '#{formats.keys.join(', ')}'"
-        end
-        
-        # Default extension is the same as the format
-        style_extension = non_standard_extensions[options[:format]]
-        style_extension ||= ".#{style}"
-        
+
+        style = format_symbol_to_standard_text options[:format]
+        style_extension = format_symbol_to_extension options[:format]
+
         if options[:source] == :ncbi
-          # e.g. 
+          # e.g.
           # ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/litesra/DRR/DRR000/DRR000002/DRR000002/DRR000002.lite.sra
           [
             "ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun",
