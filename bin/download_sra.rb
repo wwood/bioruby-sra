@@ -48,6 +48,7 @@ o = OptionParser.new do |opts|
   end
 
   # logger options
+  opts.separator "\nVerbosity:\n\n"
   opts.on("-q", "--quiet", "Run quietly, set logging to ERROR level [default INFO]") do |q|
     Bio::Log::CLI.trace('error')
   end
@@ -121,7 +122,9 @@ accessions.each do |acc|
 
   log.info "Found #{runs.length} runs to download for accession number #{acc}"
   runs.each_with_index do |run, index|
-    download_path = "#{run}#{options[:format]}"
+    download_path = "#{run}.#{options[:format]}"
+    log.debug "Downloading to #{download_path}"
+
     if File.exist?(download_path)
       log.debug "Skipping download of run #{download_path} since a file of that accession already exists"
       next
