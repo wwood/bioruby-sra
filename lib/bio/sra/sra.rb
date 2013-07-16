@@ -32,12 +32,13 @@ module Bio
         'DRR' => Bio::SRA::RUN,
       }
 
-      # bys = {
-        # Bio::SRA::EXPERIMENT => 'ByExp',
-        # Bio::SRA::RUN => 'ByRun',
-        # Bio::SRA::SAMPLE => 'BySample',
-        # Bio::SRA::STUDY => 'ByStudy',
-      # }
+      TYPE_TO_COLUMN = {
+        Bio::SRA::SUBMISSION => :submission_accession,
+        Bio::SRA::STUDY => :study_accession,
+        Bio::SRA::SAMPLE => :sample_accession,
+        Bio::SRA::EXPERIMENT => :experiment_accession,
+        Bio::SRA::RUN => :run_accession,
+      }
 
       def self.classify_accession_type(accession)
         type = ACCESSION_TO_TYPE[accession[0..2]]
@@ -46,6 +47,12 @@ module Bio
         end
         @@log.debug "Classified #{accession} as SRA type '#{type}'" if @@log.debug?
         return type
+      end
+
+      # Given an accession, return the column name it in the SRA table that contains it as a symbol.
+      # e.g. accession_to_column_name('SRR617581') => :run_accession
+      def self.accession_to_column_name(accession)
+        TYPE_TO_COLUMN[classify_accession_type(accession)]
       end
 
       def self.format_symbol_to_extension(format_symbol)
