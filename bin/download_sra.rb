@@ -12,7 +12,7 @@ SCRIPT_NAME = File.basename(__FILE__); LOG_NAME = SCRIPT_NAME.gsub('.rb','')
 # Parse command line options into the options hash
 options = {
   :logger => 'stderr',
-  :format => :sralite,
+  :format => :sra,
   :accessions_file => nil,
   :download_all_from_study => false,
   :treat_input_as_runs => false,
@@ -80,8 +80,10 @@ else
 end
 # Remove empty strings and extra digits at the end e.g. SRA029325.1 => SRA029325
 accessions = almost_accessions.reject{|a| a==''}.collect{|a| a.gsub(/\.\d+$/,'')}
+log.info "Read in #{accessions.length} accessions"
 
 # Connect to the database
+log.info "Connecting to database.."
 Bio::SRA::Connection.connect unless options[:treat_input_as_runs]
 
 
@@ -89,28 +91,22 @@ Bio::SRA::Connection.connect unless options[:treat_input_as_runs]
 accessions.each do |acc|
   runs = []
   if options[:download_all_from_study]
+    runs = Bio::SRA::Tables::SRA.where(:study_accession => acc)
     study_accessions = runs.collect{|r| r.study_accession}.uniq
     unless study_accessions.length == 1
-      log.warn "Unexpectedly found #{study_accessions.length} different studies associated with accession number #{acc}, skipping"
-      next
+      log.warn "Unexpectedly found #{study_accessions.length} different studies associated with accession number #{acc}, continuing"
+      exit 1
     end
-    study_acc = study_accessions[0]
-    # Can't see why this would happen unless the ruby code is out of date or the
-    unless Bio::SRA::Accession.classify_accession_type(study_acc) == Bio::SRA::Study
-      log.warn "Unexpected form of study accession found, for study accession #{study_acc} found from the given accession #{acc}, skipping"
-      next
-    end
-    runs = Bio::SRA::Tables::SRA.where(:study_accession => study_acc).all
     # Convert Run ActiveRecords into simple accessions
-    runs = runs.collect do |r|
+    runs.collect! do |r|
       r.run_accession
     end
   elsif options[:treat_input_as_runs]
     runs = [acc]
   else
-    runs = Bio::SRA::Tables::SRA.accession(acc).all
+    runs = Bio::SRA::Tables::SRA.accession(acc)
     # Convert Run ActiveRecords into simple accessions
-    runs = runs.collect do |r|
+    runs.collect! do |r|
       r.run_accession
     end
   end
