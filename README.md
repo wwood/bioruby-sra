@@ -5,14 +5,14 @@ A Sequence Read Archive (SRA) download script and Ruby interface to the [SRAdb](
 ## Installation
 
 ```sh
-gem install bio-sra
+$ gem install bio-sra
 ```
 
 ## Download script usage
 
 Download a single run file to the current directory:
 ```sh
-sra_download ERR229501
+$ sra_download ERR229501
 ```
 
 Download a list of runs
@@ -54,6 +54,7 @@ Bio::SRA::Tables::SRA.first.submission_date
 Bio::SRA::Tables::SRA.first.submission_comment
 # => "Bacillus subtilis subsp. natto BEST195 draft sequence, the chromosome and plasmid pBEST195S"
 ```
+There is a description of each available table on the [wiki](https://github.com/wwood/bioruby-sra/wiki).
 
 There are also methods for working with accession numbers, e.g.
 ```ruby
@@ -70,8 +71,6 @@ how to contribute, see
 
   http://github.com/wwood/bioruby-sra
 
-The BioRuby community is on IRC server: irc.freenode.org, channel: #bioruby.
-
 ## Cite
 
 This Ruby code is unpublished, but citing the SRAdb paper is probably good practice:
@@ -80,7 +79,7 @@ This Ruby code is unpublished, but citing the SRAdb paper is probably good pract
 
 ## Biogems.info
 
-This Biogem is published at [#bio-sra](http://biogems.info/index.html)
+This Biogem is published at [biogems.info](http://biogems.info/index.html)
 
 ## Copyright
 
