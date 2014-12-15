@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "bio-sra"
   gem.homepage = "http://github.com/wwood/bioruby-sra"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{A Sequence Read Archive (SRA) download script and Ruby interface to the SRAdb (SRA metadata) SQLite database}
+  gem.description = %Q{A Sequence Read Archive (SRA) download script and Ruby interface to the SRAdb (SRA metadata) SQLite database.}
   gem.email = "donttrustben near gmail.com"
   gem.authors = ["Ben J. Woodcroft"]
   # dependencies defined in Gemfile
@@ -53,12 +53,12 @@ require 'active_record'
 
 namespace :db do
   namespace :schema do
-    desc 'Dump out the schema in markdown format suitable for inclusion at https://github.com/wwood/bioruby-sra/wiki/MetadatabaseSchema' 
+    desc 'Dump out the schema in markdown format suitable for inclusion at https://github.com/wwood/bioruby-sra/wiki/MetadatabaseSchema'
     task :dump_wiki_format do
       require 'bio-sra'
       include Bio::SRA::Tables
       Bio::SRA.connect
-      
+
       # grep 'class ' lib/bio/sra/tables.rb |awk '{print $2}'
       tables = [
         Submission,
@@ -98,7 +98,7 @@ namespace :db do
               puts "e.g. _#{examples.join('_, _')}_"
             else
               puts '_(currently always null in the database)_'
-            end         
+            end
             f
           else
             nil
