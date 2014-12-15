@@ -27,6 +27,9 @@ Download data from SRA \n"
   opts.on('-f', "--file FILENAME", "Provide a file of accession numbers, separated by whitespace or commas [default: not used, use the first argument <SRA_ACCESSION>]") do |f|
     options[:accessions_file] = f
   end
+  opts.on('-d', '--db SRAmetaDB_PATH', "Path to the SRAmetadb downloaded from NCBI e.g. from the URL [required unless all accessions are runs (rather than e.g. studies or submissions)]") do |arg|
+    options[:sradb] = arg
+  end
   opts.on("--format FORMAT", "format for download [default: 'sra']") do |f|
     format_string_to_sym = {
       'sralite' => :sralite, # no longer supported by NCBI?
@@ -89,7 +92,21 @@ end
 
 # Connect to the database if required
 log.info "Connecting to database.."
-Bio::SRA::Connection.connect unless options[:treat_input_as_runs]
+unless options[:treat_input_as_runs]
+  if options[:sradb]
+    Bio::SRA::Connection.connect options[:sradb]
+  else
+    Bio::SRA::Connection.connect
+  end
+
+  # Check for connection
+  begin
+    s = Bio::SRA::Tables::SRA.first
+  rescue
+    log.error "There was a problem connecting to the database at `#{options[:sradb] }', was it specified correctly?"
+    exit 2
+  end
+end
 
 log.info "Collecting a list of runs to download.."
 runs = []
