@@ -1,7 +1,5 @@
 # bio-sra
 
-[![Build Status](https://secure.travis-ci.org/wwood/bioruby-sra.png)](http://travis-ci.org/wwood/bioruby-sra)
-
 A Sequence Read Archive (SRA) download script and Ruby interface to the [SRAdb](ncbi.nlm.nih.gov/pmc/articles/PMC3560148/) (SRA metadata) SQLite database.
 
 ## Installation
@@ -14,7 +12,7 @@ gem install bio-sra
 
 Download a single run file to the current directory:
 ```sh
-sra_download -d '/path/to/SRAmetadb.sqlite' ERR229501
+sra_download ERR229501
 ```
 
 Download a list of runs
@@ -22,14 +20,17 @@ Download a list of runs
 $ cat srr_list.txt
 ERR229501
 ERR229498
-$ sra_download -d '/path/to/SRAmetadb.sqlite' -f srr_list.txt
+$ sra_download -f srr_list.txt
 ```
 
-Download all runs that are a part of the experiment ERP001779 ("Microbial biogeography of public restroom surfaces")
+Download all runs that are a part of the experiment ERP001779 "Microbial biogeography of public restroom surfaces". This requires an [SRAdb](http://www.bioconductor.org/packages/release/bioc/html/SRAdb.html) database (i.e. a database of the SRA metadata), which can be downloaded from 
 ```sh
 $ sra_download -d '/path/to/SRAmetadb.sqlite' ERP001779
 ```
-This finds ERP001779 and links it to runs through the SRAdb
+The SRAdb SQLite file can be downloaded from these mirrors:
+* http://gbnci.abcc.ncifcrf.gov/backup/SRAmetadb.sqlite.gz
+* http://watson.nci.nih.gov/~zhujack/SRAmetadb.sqlite.gz
+* http://dl.dropbox.com/u/51653511/SRAmetadb.sqlite.gz
 
 ## Ruby interface script
 
@@ -73,10 +74,9 @@ The BioRuby community is on IRC server: irc.freenode.org, channel: #bioruby.
 
 ## Cite
 
-This Ruby code is unpublished, but there's a problem with
+This Ruby code is unpublished, but citing the SRAdb paper is probably good practice:
 
-* [BioRuby: bioinformatics software for the Ruby programming language](http://dx.doi.org/10.1093/bioinformatics/btq475)
-* [Biogem: an effective tool-based approach for scaling up open source software development in bioinformatics](http://dx.doi.org/10.1093/bioinformatics/bts080)
+* [SRAdb: query and use public next-generation sequencing data from within R](dx.doi.org/10.1186/1471-2105-14-19)
 
 ## Biogems.info
 
@@ -84,5 +84,5 @@ This Biogem is published at [#bio-sra](http://biogems.info/index.html)
 
 ## Copyright
 
-Copyright (c) 2012 Ben J. Woodcroft. See LICENSE.txt for further details.
+Copyright (c) 2012-2014 Ben J. Woodcroft. See LICENSE.txt for further details.
 
