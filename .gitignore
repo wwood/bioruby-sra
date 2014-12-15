@@ -51,3 +51,4 @@ pkg
 Gemfile.lock
 *.gemspec
 db/SRAmetadb.sqlite
+bin/sra_download.rb

@@ -78,7 +78,7 @@ module Bio
         }
         style = formats[format_symbol]
         if style.nil?
-          raise "Unexpected download format detected #{options[:format]}, I need one of '#{formats.keys.join(', ')}'"
+          raise "Unexpected download format detected #{format_symbol}, I need one of '#{formats.keys.join(', ')}'"
         end
         return style
       end
