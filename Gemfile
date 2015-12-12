@@ -2,8 +2,8 @@ source "http://rubygems.org"
 # Add dependencies required to use your gem here.
 # Example:
 #   gem "activesupport", ">= 2.3.5"
-gem 'activerecord', '~> 3.2'
-gem "activesupport", "~> 3.2"
+gem 'activerecord', '>= 3'
+gem "activesupport", ">= 3"
 gem "sqlite3", "~> 1.3"
 gem 'bio-logger', '~> 1.0'
 
